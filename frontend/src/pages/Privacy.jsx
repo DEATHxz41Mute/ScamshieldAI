@@ -24,7 +24,7 @@ export default function Privacy() {
           </div>
         </div>
 
-        <div className="space-y-4 text-sm text-slate-300 leading-relaxed">
+        <div className="space-y-4 text-sm text-silver/80 leading-relaxed">
           <h2 className="text-base font-semibold text-white mt-6">1. Overview</h2>
           <p>
             ScamShield AI ("we", "our", or "us") provides a multi-channel scam detection and cross-channel

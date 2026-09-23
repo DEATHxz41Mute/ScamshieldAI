@@ -49,14 +49,15 @@ export default function ScamNetwork() {
       <Breadcrumbs items={[{ label: "Scam Network" }]} />
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
+          <div className="label mb-1">CROSS-CHANNEL GRAPH</div>
           <h1 className="text-2xl font-bold text-white">Scam Network</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-silver/60 mt-1">
             Events linked by shared phones, domains, emails and company names — revealing coordinated
             campaigns.
           </p>
         </div>
-        <div className="chip gap-2">
-          <NetworkIcon className="h-4 w-4 text-accent" />
+        <div className="chip gap-2 border-accent/30 text-accent">
+          <NetworkIcon className="h-4 w-4" />
           {network.nodes.length} nodes · {network.links.length} links
         </div>
       </div>
@@ -128,19 +129,19 @@ function SidePanel({ node, campaignById, network, campaigns, onSelect }) {
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <GitCompareArrows className="h-5 w-5 text-accent-violet" />
-          <h2 className="font-semibold text-white">Campaign</h2>
+          <GitCompareArrows className="h-5 w-5 text-accent" />
+          <h2 className="font-bold text-white">Campaign</h2>
         </div>
         <div>
           <div className="text-lg font-bold text-white">{c.name}</div>
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-sm text-slate-400">Campaign risk</span>
+            <span className="text-sm text-silver/60">Campaign risk</span>
             <span className="font-bold tabular-nums" style={{ color: scoreColor(c.risk_score) }}>
               {c.risk_score}
             </span>
           </div>
         </div>
-        {c.explanation && <p className="text-sm text-slate-300 leading-relaxed">{c.explanation}</p>}
+        {c.explanation && <p className="text-sm text-silver/80 leading-relaxed">{c.explanation}</p>}
         {c.shared_indicators?.length > 0 && (
           <div>
             <div className="label mb-1.5">Shared indicators</div>

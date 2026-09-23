@@ -87,7 +87,7 @@ export default function Sidebar({ status = "connecting", open, onClose }) {
 
         <div className="mt-auto space-y-3">
           {demo && (
-            <div className="chip w-full justify-center border-accent-violet/40 bg-accent-violet/10 text-accent-violet">
+            <div className="chip w-full justify-center border-accent/40 bg-accent/10 text-accent">
               ● Demo Mode active
             </div>
           )}

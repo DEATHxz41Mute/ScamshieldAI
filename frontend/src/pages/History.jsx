@@ -8,6 +8,7 @@ import { TYPE_META } from "../lib/format";
 import { PAGE_META } from "../lib/site";
 import { useAsync } from "../lib/useApi";
 import { useDocumentMeta } from "../lib/useDocumentMeta";
+import useScrollReveal from "../hooks/useScrollReveal";
 
 const SEVERITIES = [
   { id: "", label: "All" },
@@ -25,18 +26,24 @@ export default function History() {
     [severity, type]
   );
 
+  const headRef = useScrollReveal();
+  const filterRef = useScrollReveal({ delay: 60 });
+
   return (
     <div className="space-y-6 animate-fade-up">
       <Breadcrumbs items={[{ label: "History" }]} />
-      <div>
+
+      <div ref={headRef}>
+        <div className="label mb-1">DETECTION LOG</div>
         <h1 className="text-2xl font-bold text-white">History</h1>
-        <p className="text-sm text-slate-400 mt-1">Every analyzed item, newest first. Click a row for the full report.</p>
+        <p className="text-sm text-silver/60 mt-1">
+          Every analyzed item, newest first. Click a row for the full report.
+        </p>
       </div>
 
-      {/* filters */}
-      <div className="card">
+      <div ref={filterRef} className="card">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 text-sm text-slate-400">
+          <div className="flex items-center gap-2 text-sm text-silver/60">
             <Filter className="h-4 w-4" /> Filter
           </div>
 
@@ -46,7 +53,9 @@ export default function History() {
                 key={s.id}
                 onClick={() => setSeverity(s.id)}
                 className={`chip text-xs transition-colors ${
-                  severity === s.id ? "border-accent/50 bg-accent/10 text-white" : "text-slate-400 hover:text-white"
+                  severity === s.id
+                    ? "border-accent/50 bg-accent/10 text-white"
+                    : "text-silver/60 hover:text-white"
                 }`}
               >
                 {s.label}

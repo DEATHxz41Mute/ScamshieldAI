@@ -210,7 +210,7 @@ export default function NetworkGraph({ data, selectedId, onSelect, height = 540 
 
       {/* legend */}
       <div className="absolute left-3 top-3 z-10 glass px-3 py-2 text-[11px] text-slate-300 space-y-1">
-        <div className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-accent-violet" /> Campaign</div>
+        <div className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-accent" /> Campaign</div>
         <div className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-danger" /> Event (by risk)</div>
         <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-slate-500" /> Shared indicator</div>
       </div>

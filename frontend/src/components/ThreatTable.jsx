@@ -30,15 +30,15 @@ export default function ThreatTable({ events = [], compact = false }) {
               >
                 <td className="px-3 py-2.5 rounded-l-xl [&]:border-l">
                   <div className="flex items-center gap-2">
-                    <span className="grid place-items-center h-7 w-7 rounded-lg bg-white/5 text-accent">
+                    <span className="grid place-items-center h-7 w-7 rounded-lg bg-accent/10 text-accent">
                       <Icon className="h-4 w-4" />
                     </span>
-                    <span className="text-sm text-slate-200">{meta.label}</span>
+                    <span className="text-sm text-silver/90">{meta.label}</span>
                   </div>
                 </td>
                 <td className="px-3 py-2.5 max-w-[260px]">
-                  <div className="truncate text-sm text-slate-300" title={e.source || "—"}>
-                    {e.source || <span className="text-slate-600">—</span>}
+                  <div className="truncate text-sm text-silver/80" title={e.source || "—"}>
+                    {e.source || <span className="text-silver/40">—</span>}
                   </div>
                 </td>
                 <td className="px-3 py-2.5">
@@ -47,16 +47,16 @@ export default function ThreatTable({ events = [], compact = false }) {
                 {!compact && (
                   <td className="px-3 py-2.5">
                     {e.campaign_id ? (
-                      <span className="inline-flex items-center gap-1 text-xs text-accent-violet">
+                      <span className="inline-flex items-center gap-1 text-xs text-accent">
                         <Network className="h-3.5 w-3.5" /> Linked
                       </span>
                     ) : (
-                      <span className="text-xs text-slate-600">—</span>
+                      <span className="text-xs text-silver/40">—</span>
                     )}
                   </td>
                 )}
                 <td className="px-3 py-2.5 rounded-r-xl [&]:border-r text-right">
-                  <span className="text-xs text-slate-400 whitespace-nowrap">
+                  <span className="text-xs text-silver/50 whitespace-nowrap">
                     {formatRelative(e.timestamp)}
                   </span>
                 </td>

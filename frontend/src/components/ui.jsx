@@ -77,15 +77,15 @@ export function DemoToggle() {
       title="Demo Mode runs entirely on realistic sample data — no external APIs required. Ideal for live demos."
       className={`chip gap-2 transition-all ${
         demo
-          ? "border-accent-violet/50 bg-accent-violet/15 text-accent-violet"
-          : "text-slate-400 hover:text-white hover:border-white/20"
+          ? "border-accent/50 bg-accent/15 text-accent"
+          : "text-silver/60 hover:text-white hover:border-white/20"
       }`}
     >
-      <Zap className={`h-3.5 w-3.5 ${demo ? "fill-accent-violet/40" : ""}`} />
+      <Zap className={`h-3.5 w-3.5 ${demo ? "fill-accent/40" : ""}`} />
       <span className="text-xs font-medium">Demo {demo ? "On" : "Off"}</span>
       <span
         className={`relative ml-0.5 inline-flex h-4 w-7 items-center rounded-full transition-colors ${
-          demo ? "bg-accent-violet/70" : "bg-white/15"
+          demo ? "bg-accent/70" : "bg-white/15"
         }`}
       >
         <span
