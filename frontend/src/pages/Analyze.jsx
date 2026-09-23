@@ -89,7 +89,7 @@ export default function Analyze() {
       </div>
 
       {demo && (
-        <div className="chip border-accent-violet/40 bg-accent-violet/10 text-accent-violet">
+        <div className="chip border-accent/40 bg-accent/10 text-accent">
           <Sparkles className="h-3.5 w-3.5" /> Demo Mode — runs fully offline on realistic sample data
         </div>
       )}

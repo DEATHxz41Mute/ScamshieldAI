@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "../api/client";
+import { AgentGrid } from "../components/AgentCard";
 import Breadcrumbs from "../components/Breadcrumbs";
 import IndicatorChip from "../components/IndicatorChip";
 import RiskMeter from "../components/RiskMeter";
@@ -90,23 +91,23 @@ export default function ThreatReport() {
 
       {/* correlation banner (high priority — the differentiator) */}
       {correlated && (
-        <div className="card border border-accent-violet/40 bg-gradient-to-br from-accent-violet/10 to-transparent">
+        <div className="card border border-accent/40 bg-accent/[0.06]">
           <div className="flex flex-wrap items-start gap-4">
-            <div className="grid place-items-center h-11 w-11 rounded-xl bg-accent-violet/20 border border-accent-violet/30 shrink-0">
-              <GitCompareArrows className="h-6 w-6 text-accent-violet" />
+            <div className="grid place-items-center h-11 w-11 rounded-xl bg-accent/15 border border-accent/30 shrink-0">
+              <GitCompareArrows className="h-6 w-6 text-accent" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="font-semibold text-white">Part of a coordinated scam campaign</h2>
-                <span className="chip border-accent-violet/40 bg-accent-violet/10 text-accent-violet text-xs">
+                <h2 className="font-bold text-white">Part of a coordinated scam campaign</h2>
+                <span className="chip border-accent/40 bg-accent/10 text-accent text-xs">
                   {corr.related_count} related {corr.related_count === 1 ? "event" : "events"}
                 </span>
               </div>
               {corr.campaign_name && (
-                <div className="text-sm text-accent-violet mt-1 font-medium">{corr.campaign_name}</div>
+                <div className="text-sm text-accent mt-1 font-medium">{corr.campaign_name}</div>
               )}
               {corr.explanation && (
-                <p className="text-sm text-slate-300 mt-2 leading-relaxed">{corr.explanation}</p>
+                <p className="text-sm text-silver/80 mt-2 leading-relaxed">{corr.explanation}</p>
               )}
               {corr.shared_indicators?.length > 0 && (
                 <div className="mt-3">
@@ -121,7 +122,6 @@ export default function ThreatReport() {
               <Link
                 to={`/network?focus=event-${ev.id}`}
                 className="btn btn-primary mt-4"
-                style={{ background: "linear-gradient(135deg,#8b5cf6,#22d3ee)" }}
               >
                 <Network className="h-4 w-4" /> View Scam Network
               </Link>
@@ -135,19 +135,19 @@ export default function ThreatReport() {
         <div className="card">
           <div className="flex items-center gap-2 mb-3">
             <ShieldAlert className={`h-5 w-5 ${sev.text}`} />
-            <h2 className="font-semibold text-white">Why this was flagged</h2>
+            <h2 className="font-bold text-white">Why this was flagged</h2>
           </div>
           {ev.reasons?.length ? (
             <ul className="space-y-2.5">
               {ev.reasons.map((r, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-sm text-slate-300">
+                <li key={i} className="flex items-start gap-2.5 text-sm text-silver/80">
                   <CheckCircle2 className={`h-4 w-4 mt-0.5 shrink-0 ${sev.text}`} />
                   <span>{r}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-silver/60">
               No suspicious signals detected. This item looks safe.
             </p>
           )}
@@ -158,7 +158,7 @@ export default function ThreatReport() {
           <div className="card">
             <div className="flex items-center gap-2 mb-3">
               <Fingerprint className="h-5 w-5 text-accent" />
-              <h2 className="font-semibold text-white">Extracted indicators</h2>
+              <h2 className="font-bold text-white">Extracted indicators</h2>
             </div>
             {ev.indicators?.length ? (
               <div className="flex flex-wrap gap-1.5">
@@ -167,18 +167,18 @@ export default function ThreatReport() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-slate-400">No structured indicators extracted.</p>
+              <p className="text-sm text-silver/60">No structured indicators extracted.</p>
             )}
           </div>
 
           <div className="card">
             <div className="flex items-center gap-2 mb-3">
               <Bot className="h-5 w-5 text-accent" />
-              <h2 className="font-semibold text-white">Agents involved</h2>
+              <h2 className="font-bold text-white">Agents involved</h2>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {(ev.agents || []).map((a, i) => (
-                <span key={i} className="chip text-xs">
+                <span key={i} className="chip text-xs border-silver/20 text-silver/80">
                   {a}
                 </span>
               ))}
@@ -192,9 +192,9 @@ export default function ThreatReport() {
         <div className="card">
           <div className="flex items-center gap-2 mb-3">
             <Info className="h-5 w-5 text-accent" />
-            <h2 className="font-semibold text-white">Analyst summary</h2>
+            <h2 className="font-bold text-white">Analyst summary</h2>
           </div>
-          <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">{ev.explanation}</p>
+          <p className="text-sm text-silver/80 leading-relaxed whitespace-pre-wrap">{ev.explanation}</p>
         </div>
       )}
     </div>

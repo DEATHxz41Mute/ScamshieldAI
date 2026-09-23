@@ -39,7 +39,7 @@ export default function Sidebar({ status = "connecting", open, onClose }) {
       >
         {/* brand */}
         <div className="flex items-center gap-3 px-2 py-2">
-          <div className="relative grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-accent/25 to-accent-violet/25 border border-white/10">
+          <div className="relative grid place-items-center h-10 w-10 rounded-xl bg-accent/10 border border-accent/40">
             <ShieldCheck className="h-5 w-5 text-accent" />
           </div>
           <div className="leading-tight">
