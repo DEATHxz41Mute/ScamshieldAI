@@ -1,16 +1,53 @@
 """Text / SMS Agent.
 
-Rule-based scam classifier. Scans for the classic scam signals (urgency,
-threats, fake rewards, money/credential requests, brand impersonation) and
-returns a 0-100 risk contribution plus human-readable reasons.
+Primary detector: a trained TF-IDF + LogisticRegression classifier
+(`models/scam_classifier.joblib`) fit on ~1M labelled phishing/SMS-spam
+examples (CEAS_08, Spam-Ham, UCI SMS Spam). It returns a probability, which we
+map to a 0-100 risk score.
 
-`scan_text()` is the reusable core — the Email and Job agents build on it.
+Fallback: the hand-written `scan_text()` rulebook runs when the model file is
+missing (e.g. a fresh checkout) so the app never breaks.
 
-NOTE: a fine-tuned classifier (e.g. DistilBERT) could drop in right here by
-replacing `scan_text()` with a model call and mapping its label/probability to
-a score; the rest of the pipeline is unchanged.
+Hybrid: when both agree the score is confident; when they disagree the
+rulebook reasons are still reported so every flag is explainable.
+
+A fine-tuned transformer (e.g. DistilBERT) could drop in right here by
+replacing `predict()` with a model call and mapping its label/probability to a
+score; the rest of the pipeline is unchanged.
 """
+import os
+import pickle
 import re
+
+_MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "models",
+                          "scam_classifier.joblib")
+_model = None
+
+
+def _load_model():
+    global _model
+    if _model is None and os.path.exists(_MODEL_PATH):
+        with open(_MODEL_PATH, "rb") as f:
+            _model = pickle.load(f)
+    return _model
+
+
+def predict(text: str) -> dict:
+    """Classify text with the trained model.
+
+    Returns {"scam": bool, "probability": float, "model": str}.
+    Falls back to the rulebook when no model is available.
+    """
+    m = _load_model()
+    if m is None:
+        result = scan_text(text)
+        return {
+            "scam": result["score"] >= 35,
+            "probability": result["score"] / 100.0,
+            "model": "rulebook",
+        }
+    proba = m.predict_proba([text.lower()])[0][1]  # P(scam)
+    return {"scam": proba >= 0.5, "probability": float(proba), "model": "tfidf-lr"}
 
 # category -> (points, list of trigger phrases)
 SCAM_CATEGORIES: dict[str, tuple[int, list[str]]] = {
@@ -88,13 +125,28 @@ _LABELS = {
 
 
 def analyze(content: str, indicators: list[dict], demo_mode: bool = False) -> dict:
-    result = scan_text(content)
-    reasons = list(result["reasons"])
-    score = result["score"]
+    """Score content. The trained model is the primary detector; the rulebook
+    supplies explainable reasons and acts as a fallback."""
+    model_result = predict(content)
+    rule_result = scan_text(content)
+
+    prob = model_result["probability"]
+    model_score = int(round(prob * 100))
+    rule_score = rule_result["score"]
+
+    # Blend: trust the model, but let strong rulebook signals pull the score up.
+    score = max(model_score, rule_score if rule_score >= 55 else 0)
+    score = min(score, 100)
+
+    reasons = list(rule_result["reasons"])
+    if model_result["model"] == "tfidf-lr":
+        tag = (f"Trained classifier: {prob * 100:.0f}% scam probability "
+               f"(model: TF-IDF + LogisticRegression)")
+        reasons = [tag] + reasons
 
     # An unsolicited message that contains a link is more suspicious.
     has_url = any(i["type"] == "url" for i in indicators)
-    if has_url and result["categories"]:
+    if has_url and (rule_result["categories"] or model_result["scam"]):
         score = min(score + 10, 100)
         reasons.append("Message contains a link alongside pressure language")
 
@@ -105,5 +157,7 @@ def analyze(content: str, indicators: list[dict], demo_mode: bool = False) -> di
         "agent": "Text/SMS Agent",
         "risk_score": score,
         "reasons": reasons,
-        "categories": result["categories"],
+        "categories": rule_result["categories"],
+        "model": model_result["model"],
+        "model_probability": prob,
     }

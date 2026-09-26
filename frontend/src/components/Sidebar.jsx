@@ -1,109 +1,109 @@
-import { Clock, FileText, LayoutDashboard, ScanSearch, Share2, ShieldCheck, ShieldAlert, X } from "lucide-react";
+import { ShieldCheck, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useDemoMode } from "../context/DemoMode";
 
 const NAV = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/analyze", label: "Analyze", icon: ScanSearch },
-  { to: "/network", label: "Scam Network", icon: Share2 },
-  { to: "/history", label: "History", icon: Clock },
-  { to: "/privacy", label: "Privacy", icon: ShieldAlert },
-  { to: "/terms", label: "Terms", icon: FileText },
+  { to: "/", label: "Dashboard", icon: "grid_view" },
+  { to: "/analyze", label: "Analyze Threat", icon: "radar" },
+  { to: "/network", label: "Scam Network", icon: "hub" },
+  { to: "/history", label: "Threat Log / History", icon: "receipt_long" },
+  { to: "/privacy", label: "Privacy", icon: "shield" },
+  { to: "/terms", label: "Terms", icon: "gavel" },
 ];
 
-const STATUS_META = {
-  online: { dot: "bg-safe", ring: "shadow-[0_0_10px_2px_rgba(52,211,153,0.6)]", label: "Online" },
-  connecting: { dot: "bg-warn", ring: "", label: "Connecting…" },
-  offline: { dot: "bg-danger", ring: "", label: "Offline" },
-};
+function Icon({ name, className = "text-[18px]" }) {
+  return <span className={`material-symbols-outlined ${className}`}>{name}</span>;
+}
 
 export default function Sidebar({ status = "connecting", open, onClose }) {
   const { demo } = useDemoMode();
-  const s = STATUS_META[status] || STATUS_META.connecting;
 
   return (
     <>
-      {/* mobile overlay */}
       {open && (
         <div
-          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-30 bg-black/70 backdrop-blur-sm lg:hidden"
           onClick={onClose}
         />
       )}
 
       <aside
-        className={`fixed z-40 inset-y-0 left-0 w-[264px] p-4 flex flex-col
-          border-r border-white/10 bg-ink-900/80 backdrop-blur-xl
+        className={`fixed z-40 inset-y-0 left-0 w-72 flex flex-col justify-between
+          bg-surface-container-lowest border-r border-outline-variant/30
           transition-transform duration-300 lg:translate-x-0
           ${open ? "translate-x-0" : "-translate-x-full"}`}
       >
-        {/* brand */}
-        <div className="flex items-center gap-3 px-2 py-2">
-          <div className="relative grid place-items-center h-10 w-10 rounded-xl bg-accent/10 border border-accent/40">
-            <ShieldCheck className="h-5 w-5 text-accent" />
-          </div>
-          <div className="leading-tight">
-            <div className="font-extrabold tracking-tight text-white">
-              ScamShield <span className="text-accent">AI</span>
+        <div className="flex flex-col">
+          {/* brand */}
+          <div className="px-space-lg pt-space-lg pb-space-md border-b border-outline-variant/20">
+            <div className="flex items-center gap-space-sm">
+              <div className="w-8 h-8 rounded bg-primary-container flex items-center justify-center shadow-[0_0_12px_rgba(255,86,37,0.35)]">
+                <ShieldCheck className="w-5 h-5 text-on-primary" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-headline-sm uppercase tracking-wider text-on-surface">
+                  SCAMSHIELD // AI
+                </span>
+                <span className="font-label-sm uppercase tracking-widest text-primary">
+                  CROSS-CHANNEL CORRELATION
+                </span>
+              </div>
             </div>
-            <div className="text-[11px] text-slate-400">Threat Intelligence</div>
+            <div className="mt-space-md pt-space-xs">
+              <div className="inline-flex items-center gap-space-xs px-space-sm py-space-xs bg-surface-container border border-outline-variant/40 rounded">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span className="font-label-sm uppercase tracking-widest text-on-surface">
+                  AI ENGINE ● ONLINE
+                </span>
+              </div>
+            </div>
           </div>
-          <button
-            className="ml-auto lg:hidden text-slate-400 hover:text-white"
-            onClick={onClose}
-            aria-label="Close menu"
-          >
-            <X className="h-5 w-5" />
-          </button>
+
+          {/* nav */}
+          <nav className="flex flex-col gap-space-xs px-space-md py-space-lg">
+            {NAV.map(({ to, label, icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={to === "/"}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `flex items-center gap-space-md px-space-md py-space-sm rounded transition-colors uppercase tracking-wider font-label-md ${
+                    isActive
+                      ? "bg-primary-container text-on-primary font-bold shadow-[0_0_12px_rgba(255,86,37,0.25)]"
+                      : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon name={icon} className={isActive ? "text-on-primary" : ""} />
+                    {label}
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </nav>
         </div>
 
-        {/* nav */}
-        <nav className="mt-6 space-y-1">
-          <div className="label px-3 mb-2">Navigation</div>
-          {NAV.map(({ to, label, icon: Icon, end }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={end}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all
-                ${
-                  isActive
-                    ? "bg-accent/10 text-white border border-accent/30 shadow-glow"
-                    : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <Icon className={`h-[18px] w-[18px] ${isActive ? "text-accent" : ""}`} />
-                  {label}
-                </>
-              )}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="mt-auto space-y-3">
+        <div className="p-space-md border-t border-outline-variant/20 flex flex-col gap-space-sm bg-surface-container-low">
           {demo && (
-            <div className="chip w-full justify-center border-accent/40 bg-accent/10 text-accent">
+            <div className="chip w-full justify-center border-primary-container/40 bg-primary-container/10 text-primary">
               ● Demo Mode active
             </div>
           )}
-          {/* engine status */}
-          <div className="glass p-3 flex items-center gap-3">
-            <div className="relative">
-              <span className={`block h-2.5 w-2.5 rounded-full ${s.dot} ${s.ring}`} />
-              {status === "online" && (
-                <span className="absolute inset-0 rounded-full bg-safe animate-pulse-ring" />
-              )}
+          <div className="flex items-center justify-between font-label-sm uppercase tracking-wider text-secondary">
+            <span>STATUS</span>
+            <span className="text-primary uppercase">SECURE NODE</span>
+          </div>
+          <div className="p-space-sm bg-surface-container border border-outline-variant/30 rounded font-label-sm flex flex-col gap-space-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-secondary">LATENCY</span>
+              <span className="text-on-surface font-semibold">14ms</span>
             </div>
-            <div className="leading-tight">
-              <div className="text-sm font-semibold text-white">AI Protection Engine</div>
-              <div className={`text-xs ${status === "online" ? "text-safe" : status === "offline" ? "text-danger" : "text-warn"}`}>
-                {s.label}
-              </div>
+            <div className="flex items-center justify-between">
+              <span className="text-secondary">INGESTION</span>
+              <span className="text-on-surface font-semibold">4.2k/sec</span>
             </div>
           </div>
         </div>

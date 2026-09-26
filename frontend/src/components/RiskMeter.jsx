@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { scoreColor, severityMeta } from "../lib/format";
+import { severityMeta } from "../lib/format";
 
 /**
- * Circular risk gauge. Animates from 0 to `score` on mount.
+ * Arc risk gauge (Stitch "Arc Risk Meter"). Animates from 0 to `score`.
+ * 120x120 SVG arc with a fiery primary-container stroke.
  */
 export default function RiskMeter({ score = 0, severity, size = 200 }) {
   const [val, setVal] = useState(0);
-  const color = scoreColor(score);
   const sev = severityMeta(severity);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function RiskMeter({ score = 0, severity, size = 200 }) {
     const duration = 900;
     const tick = (now) => {
       const p = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+      const eased = 1 - Math.pow(1 - p, 3);
       setVal(Math.round(score * eased));
       if (p < 1) raf = requestAnimationFrame(tick);
     };
@@ -23,7 +23,7 @@ export default function RiskMeter({ score = 0, severity, size = 200 }) {
     return () => cancelAnimationFrame(raf);
   }, [score]);
 
-  const stroke = 14;
+  const stroke = 10;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const offset = c * (1 - val / 100);
@@ -34,30 +34,44 @@ export default function RiskMeter({ score = 0, severity, size = 200 }) {
         <circle
           cx={size / 2}
           cy={size / 2}
-          r={r}
           fill="none"
-          stroke="rgba(255,255,255,0.08)"
+          stroke="currentColor"
+          className="text-surface-variant"
+          r={r}
           strokeWidth={stroke}
         />
         <circle
           cx={size / 2}
           cy={size / 2}
-          r={r}
           fill="none"
-          stroke={color}
+          stroke="currentColor"
+          className="text-primary-container"
+          r={r}
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={offset}
-          style={{ filter: `drop-shadow(0 0 8px ${color}66)`, transition: "stroke 0.3s" }}
+          style={{ transition: "stroke-dashoffset 0.3s" }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="text-5xl font-extrabold tabular-nums" style={{ color }}>
+        <div className="font-display-xl tracking-tight text-on-surface leading-none">
           {val}
         </div>
-        <div className="text-xs uppercase tracking-widest text-slate-400 mt-1">Risk Score</div>
-        <div className={`mt-2 text-sm font-semibold ${sev.text}`}>{sev.label}</div>
+        <div className="font-label-sm uppercase tracking-widest text-secondary mt-1">
+          / 100 INDEX
+        </div>
+        <div
+          className={`mt-2 px-2 py-0.5 text-[10px] uppercase font-bold tracking-widest rounded ${
+            sev.label === "High Risk"
+              ? "bg-primary-container text-on-primary"
+              : sev.label === "Suspicious"
+                ? "bg-tertiary-container text-on-tertiary-container"
+                : "bg-surface-container text-on-surface-variant"
+          }`}
+        >
+          {sev.label}
+        </div>
       </div>
     </div>
   );

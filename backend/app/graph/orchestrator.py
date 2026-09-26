@@ -226,11 +226,49 @@ def _template_report(state: AnalysisState) -> str:
     corr = state.get("correlation", {})
     corr_txt = f" {corr['explanation']}" if corr.get("related_count", 0) > 0 else ""
     return f"{lead} (Risk score {score}/100).{body}{advice}{corr_txt}"
+    
+def _needs_deep_check(state: AnalysisState) -> str:
+    score = state.get("risk_score", 0)
+    if 30 <= score < 70:
+        return "deep_check"
+    return "correlation"
 
 
-# --------------------------------------------------------------------------
-#  Build + compile the graph once
-# --------------------------------------------------------------------------
+def _deep_check_node(state: AnalysisState) -> dict:
+    channel = _CHANNEL.get(state["input_type"], state["input_type"])
+    reasons = "\n".join(f"- {r}" for r in state["reasons"])
+    prompt = (
+        f"A {channel} scored {state['risk_score']}/100 on an initial scam check "
+        f"-- inconclusive. Signals so far:\n{reasons}\n\n"
+        "Re-examine for anything the first pass may have missed (subtler urgency "
+        "cues, mismatched sender claims, indirect payment requests). Reply with "
+        "ONLY an integer 0-100 for a revised risk score."
+    )
+    raw = generate(prompt, max_tokens=10, demo_mode=state.get("demo_mode", False))
+    revised = None
+    if raw:
+        digits = "".join(c for c in raw if c.isdigit())[:3]
+        if digits:
+            revised = max(0, min(100, int(digits)))
+
+    if revised is None:
+        indicator_count = len(state.get("indicators", []))
+        nudge = 6 if indicator_count >= 2 else -4
+        revised = max(0, min(100, state["risk_score"] + nudge))
+        note = "Escalated for rule-based secondary review (borderline initial score, no LLM key)."
+    else:
+        note = "Escalated for AI secondary review (borderline initial score)."
+
+    if revised != state["risk_score"]:
+        event = state["db"].get(Event, state["event_id"])
+        event.risk_score = revised
+        event.severity = severity_from_score(revised)
+        state["db"].flush()
+        return {"risk_score": revised, "severity": event.severity,
+                "reasons": state["reasons"] + [note]}
+    return {"reasons": state["reasons"] + [note]}
+
+
 def _build_graph():
     g = StateGraph(AnalysisState)
     g.add_node("extract", _extract_node)
