@@ -14,4 +14,5 @@ anthropic>=0.39.0            # Claude LLM (optional — graceful fallback if uns
 opencv-python-headless>=4.9.0  # QR decoding (no system libs needed, unlike pyzbar)
 numpy>=1.26.0
 scikit-learn>=1.5.0            # trained scam classifier (replaces the rulebook)
-psycopg2-binary>=2.9.9       # PostgreSQL driver (used on Render; SQLite needs nothing)
+psycopg2-binary>=2.9.9       # PostgreSQL driver (v2)
+psycopg[binary]>=3.1.18      # PostgreSQL driver (v3 — required by SQLAlchemy 2.0)
